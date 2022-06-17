@@ -5,23 +5,17 @@ import {
   createStyles,
   Group,
   Header,
-  Navbar,
   Paper,
   Text,
   Title,
 } from "@mantine/core";
 import React from "react";
+import { PlayCard } from "tabler-icons-react";
 import { kAppName } from "../../constants/strings";
+import AppLogo from "../common/AppLogo";
 import { GoogleIcon } from "./Icons/GoogleIcon";
 
 const useStyles = createStyles((theme) => ({
-  wrapper: {
-    minHeight: "100vh",
-    backgroundSize: "cover",
-    backgroundImage:
-      "url(https://img.freepik.com/free-vector/diagonal-motion-lines-white-background_1017-33198.jpg?w=2000)",
-  },
-
   title: {
     color: theme.colorScheme === "dark" ? theme.white : theme.black,
     fontFamily: `Greycliff CF, ${theme.fontFamily}`,
@@ -54,7 +48,7 @@ export function AuthForm() {
       header={
         <Header height={100} p='xs'>
           <Center style={{ height: "100%" }}>
-            <Title className={classes.title}>{kAppName}</Title>
+            <AppLogo />
           </Center>
         </Header>
       }
