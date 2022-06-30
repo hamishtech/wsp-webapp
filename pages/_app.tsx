@@ -7,6 +7,8 @@ import { QueryCache, QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import React from "react";
 import { useRouter } from "next/router";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function App(props: AppProps) {
   const { Component, pageProps } = props;
@@ -23,6 +25,15 @@ export default function App(props: AppProps) {
         queryCache: new QueryCache({
           onError: async (error: any, query) => {
             if (error.request.status === 401) {
+              toast.error("Authentication failed", {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+              });
               router.push("/login");
             }
           },
@@ -49,6 +60,8 @@ export default function App(props: AppProps) {
           }}
         >
           <QueryClientProvider client={queryClient}>
+            <ToastContainer />
+
             <Component {...pageProps} />
             <ReactQueryDevtools initialIsOpen={false} />
           </QueryClientProvider>

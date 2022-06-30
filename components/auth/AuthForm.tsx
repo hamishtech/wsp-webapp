@@ -8,15 +8,16 @@ import {
   Text,
   Title,
 } from "@mantine/core";
-import AppLogo from "../common/AppLogo";
-import { GoogleIcon } from "./Icons/GoogleIcon";
 import { useGoogleLogin } from "@react-oauth/google";
-import { useState } from "react";
-import AuthService from "../../services/AuthService";
-import { useMutation, useQuery } from "react-query";
+import { useRouter } from "next/router";
+import React, { useState } from "react";
+import { useMutation } from "react-query";
+import { Id, toast } from "react-toastify";
+import AuthenticationService from "../../services/AuthenticationService";
 import { GoogleCredentialsDTO } from "../../types/GoogleCredentials.interface";
 import { IUser } from "../../types/User.interface";
-import AuthenticationService from "../../services/AuthenticationService";
+import AppLogo from "../common/AppLogo";
+import { GoogleIcon } from "./Icons/GoogleIcon";
 
 const useStyles = createStyles((theme) => ({
   title: {
@@ -34,6 +35,24 @@ const useStyles = createStyles((theme) => ({
 
 export function AuthForm() {
   let [user, setUser] = useState<IUser | null>(null);
+  const toastId = React.useRef<Id>("random");
+  const router = useRouter();
+
+  const loggingInToast = () =>
+    (toastId.current = toast.loading("Logging in", { autoClose: false }));
+
+  const loginSuccessToast = () =>
+    toast.update(toastId.current, {
+      type: toast.TYPE.SUCCESS,
+      autoClose: 2000,
+      isLoading: false,
+      render: () => <div>Login Success! Welcome</div>,
+    });
+
+  const loginFailureToast = () => {
+    toast.error("Login failed");
+  };
+
   const mutation = useMutation(
     (dto: GoogleCredentialsDTO) => {
       return AuthenticationService.loginWithGoogle(dto);
@@ -41,7 +60,15 @@ export function AuthForm() {
     {
       onSuccess: (data, variables, context) => {
         setUser(data.user);
+        loginSuccessToast();
         localStorage.setItem("wsps_token", data.token);
+        router.push("/test");
+      },
+      onMutate: () => {
+        loggingInToast();
+      },
+      onError: (error) => {
+        loginFailureToast();
       },
     }
   );
@@ -54,7 +81,7 @@ export function AuthForm() {
       mutation.mutate(dto);
       setUser(user);
     },
-    onError: (error) => console.log("Login failed, error occurred"),
+    onError: () => loginFailureToast(),
   });
 
   // let headerHeight = "100px";
@@ -81,8 +108,6 @@ export function AuthForm() {
       >
         <AppLogo color='white' />
       </Center>
-      {user && <div>{user.email}</div>}
-      {mutation.isError && <div>error occured</div>}
       <Center style={{ height: "100%" }} component='div'>
         <Group direction='column' position='center'>
           <Paper withBorder shadow='md' p={20} radius='md'>

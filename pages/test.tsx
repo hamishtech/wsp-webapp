@@ -1,9 +1,13 @@
-import { createStyles, Group, Paper } from "@mantine/core";
-import axios from "axios";
-import { useEffect, useState } from "react";
+import {
+  Avatar,
+  Center,
+  createStyles,
+  Group,
+  Loader,
+  Paper,
+} from "@mantine/core";
 import { useQuery } from "react-query";
 import TestService from "../services/TestService";
-import { IUser } from "../types/User.interface";
 
 const useStyles = createStyles((theme) => ({
   container: { height: "100vh" },
@@ -18,18 +22,19 @@ const Test = () => {
 
   if (data) {
     return (
-      <Paper>
-        <Group mx={"auto"} position='center'>
+      <Center className={classes.container}>
+        <Group>
+          <Avatar src={data.picture} alt="it's me" />
           <div>{data.email}</div>
         </Group>
-      </Paper>
+      </Center>
     );
   }
 
   return (
     <Paper>
       <Group mx={"auto"} position='center'>
-        <div>loading....</div>
+        <Loader size={50} />
       </Group>
     </Paper>
   );
