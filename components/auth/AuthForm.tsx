@@ -8,9 +8,15 @@ import {
   Text,
   Title,
 } from "@mantine/core";
-import { kAppName } from "../../constants/strings";
 import AppLogo from "../common/AppLogo";
 import { GoogleIcon } from "./Icons/GoogleIcon";
+import { useGoogleLogin } from "@react-oauth/google";
+import { useState } from "react";
+import AuthService from "../../services/AuthService";
+import { useMutation, useQuery } from "react-query";
+import { GoogleCredentialsDTO } from "../../types/GoogleCredentials.interface";
+import { IUser } from "../../types/User.interface";
+import AuthenticationService from "../../services/AuthenticationService";
 
 const useStyles = createStyles((theme) => ({
   title: {
@@ -27,7 +33,30 @@ const useStyles = createStyles((theme) => ({
 }));
 
 export function AuthForm() {
+  let [user, setUser] = useState<IUser | null>(null);
+  const mutation = useMutation(
+    (dto: GoogleCredentialsDTO) => {
+      return AuthenticationService.loginWithGoogle(dto);
+    },
+    {
+      onSuccess: (data, variables, context) => {
+        setUser(data.user);
+        localStorage.setItem("wsps_token", data.token);
+      },
+    }
+  );
   const { classes } = useStyles();
+  const login = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      var dto: GoogleCredentialsDTO = {
+        credentials: { access_token: tokenResponse.access_token },
+      };
+      mutation.mutate(dto);
+      setUser(user);
+    },
+    onError: (error) => console.log("Login failed, error occurred"),
+  });
+
   // let headerHeight = "100px";
   return (
     <AppShell
@@ -41,12 +70,6 @@ export function AuthForm() {
           backgroundSize: "cover",
         },
       })}
-      //   <Header height={headerHeight}>
-      //     <Center style={{ height: "100%" }}>
-      //       <AppLogo />
-      //     </Center>
-      //   </Header>
-      // }
     >
       <Center
         style={{
@@ -58,13 +81,20 @@ export function AuthForm() {
       >
         <AppLogo color='white' />
       </Center>
+      {user && <div>{user.email}</div>}
+      {mutation.isError && <div>error occured</div>}
       <Center style={{ height: "100%" }} component='div'>
         <Group direction='column' position='center'>
-          <Paper withBorder shadow='lg' p={20} radius='md'>
+          <Paper withBorder shadow='md' p={20} radius='md'>
             <Title order={6} className={classes.title} align='center' mb={25}>
-              To continue, log in to {kAppName}.
+              To continue, log in with your Google account.
             </Title>
-            <Button variant='outline' leftIcon={<GoogleIcon />} fullWidth>
+            <Button
+              variant='outline'
+              leftIcon={<GoogleIcon />}
+              fullWidth
+              onClick={() => login()}
+            >
               <Text size='md' transform='uppercase'>
                 Continue with Google
               </Text>

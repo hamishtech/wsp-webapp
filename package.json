@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 8080",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -12,9 +12,12 @@
     "@mantine/core": "^4.2.8",
     "@mantine/hooks": "^4.2.8",
     "@mantine/next": "^4.2.8",
+    "@react-oauth/google": "^0.2.6",
+    "axios": "^0.27.2",
     "next": "12.1.6",
     "react": "18.1.0",
     "react-dom": "18.1.0",
+    "react-query": "^3.39.1",
     "tabler-icons-react": "^1.48.1"
   },
   "devDependencies": {
