@@ -10,8 +10,23 @@ const loginWithGoogle = async (dto: GoogleCredentialsDTO) => {
   return response.data;
 };
 
+const checkAuthentication = async (authCookie: any) => {
+  try {
+    let res = await apiClient.get("/auth/authenticate", {
+      withCredentials: true,
+      headers: { cookie: authCookie ? authCookie : {} },
+    });
+    if (res.status === 200) {
+      return true;
+    }
+  } catch (error) {
+    return false;
+  }
+};
+
 const AuthenticationService = {
   loginWithGoogle,
+  checkAuthentication,
 };
 export default AuthenticationService;
 

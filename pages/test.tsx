@@ -8,6 +8,10 @@ import {
 } from "@mantine/core";
 import { useQuery } from "react-query";
 import TestService from "../services/TestService";
+import AuthenticationService from "../services/AuthenticationService";
+import apiClient from "../services/apiClient";
+import { NextPageContext } from "next";
+import axios from "axios";
 
 const useStyles = createStyles((theme) => ({
   container: { height: "100vh" },
@@ -38,6 +42,17 @@ const Test = () => {
       </Group>
     </Paper>
   );
+};
+export const getServerSideProps = async (ctx: any) => {
+  let isAuthenticated = await AuthenticationService.checkAuthentication(
+    ctx.req.headers.cookie
+  );
+
+  if (!isAuthenticated) {
+    return {
+      redirect: { destination: "/login", permanent: false },
+    };
+  } else return { props: {} };
 };
 
 export default Test;

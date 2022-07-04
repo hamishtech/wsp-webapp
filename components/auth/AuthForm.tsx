@@ -50,7 +50,12 @@ export function AuthForm() {
     });
 
   const loginFailureToast = () => {
-    toast.error("Login failed");
+    toast.update(toastId.current, {
+      type: toast.TYPE.ERROR,
+      autoClose: 2000,
+      isLoading: false,
+      render: () => <div>Login Failure</div>,
+    });
   };
 
   const mutation = useMutation(
@@ -61,7 +66,6 @@ export function AuthForm() {
       onSuccess: (data, variables, context) => {
         setUser(data.user);
         loginSuccessToast();
-        localStorage.setItem("wsps_token", data.token);
         router.push("/test");
       },
       onMutate: () => {

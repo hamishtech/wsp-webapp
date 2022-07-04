@@ -6,11 +6,6 @@ const apiClient = axios.create({
   },
 });
 
-if (typeof window !== "undefined") {
-  let token = localStorage.getItem("wsps_token");
-  if (token != null) {
-    apiClient.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-  }
-}
+apiClient.defaults.withCredentials = true;
 
 export default apiClient;
